@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Lüp</title>
+    <link rel="stylesheet" href="https://content.lup.com.au/css/login.min.css" />
+    <link rel="shortcut icon" href="https://content.lup.com.au/images/lup-icon-35.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+</head>
+<body class="login-page">
+    <div class="container">
+        <main id="content" class="widget-login-container" role="main">
+            <div class="row">
+                <div class="col-sm-12 col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2">
+                    <h4 class="widget-login-logo">
+                        <img src="https://content.lup.com.au/images/logo-black-150.png" class="img-responsive" alt="Lüp" />
+                    </h4>
+                    <section class="widget widget-login">
+                        @RenderBody()
+                    </section>
+                </div>
+            </div>
+        </main>
+        <footer class="page-footer">
+            @DateTime.Now.Year &copy; Lüp
+            <div>
+                @env.EnvironmentName @Environment.MachineName @PlatformServices.Default.Application.ApplicationVersion
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
