@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Lup.Software.Engineering.Attributes
+﻿namespace Lup.Software.Engineering.Attributes
 {
+    using System;
+
     public class TableNameAttribute
     {
         public class TableName : Attribute

@@ -5,6 +5,8 @@
     using System.IO.Compression;
     using System.Linq;
     using System.Threading.Tasks;
+    using Lup.Software.Engineering.Repositories;
+    using Lup.Software.Engineering.Repositories.Interface;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -29,7 +31,11 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.AddSingleton<IConfiguration>(this.Configuration);
+
+            services
+                .AddSingleton<IConfiguration>(this.Configuration)
+                .AddScoped(typeof(ITableRepository<>), typeof(TableStorageRepository<>));
+        
             services.AddMvc();
         }
 

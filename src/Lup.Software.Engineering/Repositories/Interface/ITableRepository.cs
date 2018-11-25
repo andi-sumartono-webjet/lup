@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using System.Collections.Generic;
-
-namespace Lup.Software.Engineering.Repositories.Interface
+﻿namespace Lup.Software.Engineering.Repositories.Interface
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     public interface ITableRepository<T> 
         where T : class
     {
@@ -16,6 +16,6 @@ namespace Lup.Software.Engineering.Repositories.Interface
 
         Task<T> AddAsync(T entity);
 
-        Task<T> Update(T entity);
+        Task<T> UpdateAsync(T entity);
     }
 }

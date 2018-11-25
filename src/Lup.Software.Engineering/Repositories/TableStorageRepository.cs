@@ -1,15 +1,15 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Lup.Software.Engineering.Attributes;
-using Lup.Software.Engineering.Exceptions;
-using Lup.Software.Engineering.Repositories.Interface;
-
-namespace Lup.Software.Engineering.Repositories
+﻿namespace Lup.Software.Engineering.Repositories
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Lup.Software.Engineering.Attributes;
+    using Lup.Software.Engineering.Exceptions;
+    using Lup.Software.Engineering.Repositories.Interface;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Table;
+
     public class TableStorageRepository<T> : ITableRepository<T> where T : TableEntity, new()
     {
         private CloudTableClient tableClient;
@@ -17,7 +17,7 @@ namespace Lup.Software.Engineering.Repositories
 
         public TableStorageRepository(IConfiguration configuration)
         {
-            var storage = CloudStorageAccount.Parse(configuration["ConnectionStrings:DefaultConnection"]);
+            var storage = CloudStorageAccount.Parse(configuration["ConnectionStrings:TableStorage"]);
             this.tableClient = storage.CreateCloudTableClient();
             var tableNameAttributes = typeof(T).GetCustomAttributes(typeof(TableNameAttribute.TableName), false);
             this.tableName = (tableNameAttributes.Length > 0)
@@ -25,20 +25,6 @@ namespace Lup.Software.Engineering.Repositories
                              : typeof(T).Name.ToLower();
         }
 
-        private async Task<CloudTable> EnsureTableAsync()
-        {
-            try
-            {
-                var table = this.tableClient.GetTableReference(this.tableName);
-                await table.CreateIfNotExistsAsync().ConfigureAwait(false);
-                return table;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return null;
-            }
-        }
 
         public async Task<T> AddAsync(T entity)
         {
@@ -89,15 +75,15 @@ namespace Lup.Software.Engineering.Repositories
 
         }
 
-        public async Task<T> Get(string PartitionKey, string RowKey)
+        public async Task<T> Get(string partitionKey, string rowKey)
         {
             var table = await this.EnsureTableAsync().ConfigureAwait(false);
-            var operation = TableOperation.Retrieve<T>(PartitionKey, RowKey);
+            var operation = TableOperation.Retrieve<T>(partitionKey, rowKey);
             var executeResult = await table.ExecuteAsync(operation).ConfigureAwait(false);
             return executeResult.Result as T;
         }
 
-        public async Task<T> Update(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             var table = await this.EnsureTableAsync().ConfigureAwait(false);
             var existingEntity = await this.Get(entity.PartitionKey, entity.RowKey);
@@ -117,5 +103,21 @@ namespace Lup.Software.Engineering.Repositories
             }
 
         }
+
+        private async Task<CloudTable> EnsureTableAsync()
+        {
+            try
+            {
+                var table = this.tableClient.GetTableReference(this.tableName);
+                await table.CreateIfNotExistsAsync().ConfigureAwait(false);
+                return table;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+        }
+
     }
 }
