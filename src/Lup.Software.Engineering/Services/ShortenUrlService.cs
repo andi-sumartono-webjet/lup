@@ -1,5 +1,6 @@
 ﻿namespace Lup.Software.Engineering.Services
 {
+    using System;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
@@ -14,13 +15,13 @@
     {
         private readonly ITableRepository<ShortUrl> urlRepository;
         private readonly ILogger<ShortenUrlService> logger;
-
+        
         public ShortenUrlService(ITableRepository<ShortUrl> urlRepository, ILogger<ShortenUrlService> logger)
         {
             this.urlRepository = urlRepository;
             this.logger = logger;
         }
-
+       
         public async Task<string> LongerUrlAsync(string shortUrl)
         {
             if (string.IsNullOrEmpty(shortUrl)
@@ -34,21 +35,16 @@
             var results = await this.urlRepository.QueryAsync(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, shortUrl));
             if (results != null && results.Count() > 0)
             {
-                return results.First().OriginalUrl;
+                var result = results.First();
+                result.CountLong += 1;
+                await this.urlRepository.UpdateAsync(result);
+                return result.OriginalUrl;
             }
             else
             {
                 this.logger.LogError($"cannot find a longer version of ${shortUrl}");
                 return string.Empty;
             }
-        }
-
-
-        private string GetHash(string inputString)
-        {
-            HashAlgorithm algorithm = MD5.Create(); 
-            byte[] encoded = algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-            return Encoding.Default.GetString(encoded);
         }
 
         public async Task<ShortUrl> ShortenUrl(string longUrl)
@@ -71,7 +67,8 @@
                 {
                     PartitionKey = partitionKey,
                     RowKey = rowKey,
-                    Count = 1,
+                    CountShort = 1,
+                    CountLong = 0,
                     OriginalUrl = longUrl
                 };
 
@@ -79,10 +76,36 @@
             } 
             else
             {
-                existingData.Count += 1;
+                existingData.CountShort += 1;
                 return await this.urlRepository.UpdateAsync(existingData);
             }
+        }
+        
+        //private static string ConvertHexStringToBase64(string hexString)
+        //{
+        //    byte[] buffer = new byte[hexString.Length / 2];
+        //    for (int i = 0; i < hexString.Length; i++)
+        //    {
+        //        buffer[i / 2] = Convert.ToByte(Convert.ToInt32(hexString.Substring(i, 2), 16));
+        //        i += 1;
+        //    }
+        //    string res = Convert.ToBase64String(buffer);
+        //    return res;
+        //}
+
+        private string GetHash(string inputString)
+        {
+            HashAlgorithm algorithm = MD5.Create();  //or use SHA256.Create();
+            var encoded = algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in GetHash(inputString))
+                sb.Append(b.ToString("X2"));
+
+            return sb.ToString();
 
         }
+
     }
+
+
 }

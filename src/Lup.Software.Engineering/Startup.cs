@@ -7,6 +7,8 @@
     using System.Threading.Tasks;
     using Lup.Software.Engineering.Repositories;
     using Lup.Software.Engineering.Repositories.Interface;
+    using Lup.Software.Engineering.Services;
+    using Lup.Software.Engineering.Services.Interface;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -34,8 +36,9 @@
 
             services
                 .AddSingleton<IConfiguration>(this.Configuration)
-                .AddScoped(typeof(ITableRepository<>), typeof(TableStorageRepository<>));
-        
+                .AddScoped(typeof(ITableRepository<>), typeof(TableStorageRepository<>))
+                .AddScoped<IShortenUrlService, ShortenUrlService>();
+
             services.AddMvc();
         }
 

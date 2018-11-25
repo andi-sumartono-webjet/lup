@@ -6,6 +6,8 @@ namespace Lup.Software.Engineering.Models
     {
         public string OriginalUrl { get; set; }
 
-        public int Count { get; set; }
+        public int CountShort { get; set; }
+
+        public int CountLong { get; set; }
     }
 }
