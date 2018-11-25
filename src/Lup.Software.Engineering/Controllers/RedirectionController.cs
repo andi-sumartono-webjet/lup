@@ -16,7 +16,7 @@
             this.urlService = urlService;
         }
 
-        [Route("/rd/{url}")]
+        [Route("/r/{url}")]
         public async Task<IActionResult> Index(string url)
         {
             var longUrl = await this.urlService.LongerUrlAsync(url);

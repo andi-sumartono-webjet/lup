@@ -98,7 +98,7 @@
             HashAlgorithm algorithm = MD5.Create();  //or use SHA256.Create();
             var encoded = algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
             StringBuilder sb = new StringBuilder();
-            foreach (byte b in GetHash(inputString))
+            foreach (byte b in encoded)
                 sb.Append(b.ToString("X2"));
 
             return sb.ToString();

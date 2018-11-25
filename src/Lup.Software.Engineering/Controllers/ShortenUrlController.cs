@@ -4,9 +4,9 @@
     using Lup.Software.Engineering.Services.Interface;
     using Microsoft.AspNetCore.Mvc;
 
-    [Route("api/url")]
+    [Route("api/short")]
     public class ShortenUrlController
-    {
+    {   
         private readonly IShortenUrlService urlService;
 
         public ShortenUrlController(IShortenUrlService urlService)
@@ -16,11 +16,11 @@
 
         public IUrlHelper UrlHelper { get; }
 
-        [HttpGet("short")]
+        [HttpGet]
         public async Task<string> Shorten(string url)
         {
             var shortUrl = await this.urlService.ShortenUrl(url);
-            return $"/rd/${shortUrl.RowKey}";
+            return $"/r/{shortUrl.RowKey}";
         }      
          
     }
