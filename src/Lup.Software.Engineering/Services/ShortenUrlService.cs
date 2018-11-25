@@ -5,6 +5,7 @@
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Web;
     using Lup.Software.Engineering.Models;
     using Lup.Software.Engineering.Repositories.Interface;
     using Lup.Software.Engineering.Services.Interface;
@@ -69,7 +70,7 @@
                     RowKey = rowKey,
                     CountShort = 1,
                     CountLong = 0,
-                    OriginalUrl = longUrl
+                    OriginalUrl = HttpUtility.UrlEncode(longUrl)
                 };
 
                 return await this.urlRepository.AddAsync(newUrl);
@@ -81,21 +82,10 @@
             }
         }
         
-        //private static string ConvertHexStringToBase64(string hexString)
-        //{
-        //    byte[] buffer = new byte[hexString.Length / 2];
-        //    for (int i = 0; i < hexString.Length; i++)
-        //    {
-        //        buffer[i / 2] = Convert.ToByte(Convert.ToInt32(hexString.Substring(i, 2), 16));
-        //        i += 1;
-        //    }
-        //    string res = Convert.ToBase64String(buffer);
-        //    return res;
-        //}
 
         private string GetHash(string inputString)
         {
-            HashAlgorithm algorithm = MD5.Create();  //or use SHA256.Create();
+            HashAlgorithm algorithm = MD5.Create();  
             var encoded = algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
             StringBuilder sb = new StringBuilder();
             foreach (byte b in encoded)
